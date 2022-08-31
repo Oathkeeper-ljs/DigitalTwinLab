@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mobinets.digitaltwinlab.dao.StaffMapper">
+
+    <sql id="insertFields">
+        campus_num, name, type
+    </sql>
+
+    <sql id="selectFields">
+        campus_num, name, type
+    </sql>
+
+    <select id="selectByCampusNum" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where campus_num = #{campusNum}
+    </select>
+
+    <select id="selectByName" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where name = #{name}
+    </select>
+
+    <insert id="insertStaff" parameterType="Staff" keyProperty="campusNum">
+        insert into staff (<include refid="insertFields"></include>)
+        values(#{campusNum}, #{name}, #{type})
+    </insert>
+
+    <update id="updateType">
+        update staff set type = #{type} where campus_num = #{campusNum}
+    </update>
+
+</mapper>
