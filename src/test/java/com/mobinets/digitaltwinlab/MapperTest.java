@@ -55,11 +55,12 @@ public class MapperTest {
     @Test
     public void testInsertUser() {
         User user = new User();
-        user.setUsername("system");
-        user.setPassword("system");
-        user.setEmail("jiangshu@163.com");
+        user.setCampusNum(202121080731L);
+        user.setUsername("Oathkeeper");
+        user.setPassword("123456");
+        user.setEmail("jiangshu@mobinets.org");
         user.setSalt("abc");
-        user.setType(2);
+        user.setType(1);
         user.setCreateTime(new Date());
 
         int rows = userMapper.insertUser(user);

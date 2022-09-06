@@ -8,7 +8,9 @@ public interface UserMapper {
 
     User selectById(int id);
 
-    User selectByUsername(String Username);
+    User selectByCampusNum(long campusNum);
+
+    User selectByUsername(String username);
 
     User selectByEmail(String email);
 
