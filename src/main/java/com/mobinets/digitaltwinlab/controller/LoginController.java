@@ -38,45 +38,33 @@ public class LoginController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    @RequestMapping(path="/register", method = RequestMethod.GET)
-    public String getRegisterPage() {
-        return "/site/register";
-    }
-
-    @RequestMapping(path="/login", method = RequestMethod.GET)
-    public String getLoginPage() {
-        return "/site/login";
-    }
-
     @RequestMapping(path="/register", method = RequestMethod.POST)
-    public String register(Model model, User user) {
+    public String register(@RequestParam("username") String username, @RequestParam("password") String password,
+                           @RequestParam("campusnum") Long campusNum, @RequestParam("email") String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setCampusNum(campusNum);
+        user.setEmail(email);
         Map<String, Object> map = userService.register(user);
         if (map == null || map.isEmpty()) {
-            model.addAttribute("msg", "注册成功，我们已经向您的邮箱发送了一封激活邮件，请尽快激活！");
-            model.addAttribute("target", "/index");
-            return "/site/success";
+            return "Register success，我们已经向您的邮箱发送了一封激活邮件，请尽快激活！";
         } else{
-            model.addAttribute("usernameMsg", map.get("usernameMsg"));
-            model.addAttribute("passwordMsg", map.get("passwordMsg"));
-            model.addAttribute("emailMsg", map.get("emailMsg"));
-            return "/site/register";
+            System.out.println(map);
+            return "Register failed";
         }
     }
 
     @RequestMapping(path="/activation/{userId}/{code}", method = RequestMethod.GET)
-    public String activation(Model model, @PathVariable("userId") int userId, @PathVariable("code") String code) {
+    public String activation(@PathVariable("userId") int userId, @PathVariable("code") String code) {
         int result = userService.activation(userId,code);
         if(result==ACTIVATION_SUCCESS) {
-            model.addAttribute("msg", "激活成功，您的账号已经可以正常使用！");
-            model.addAttribute("target", "/login");
+            return "Activation Success，您的账号已经可以正常使用！";
         } else if(result == ACTIVATION_REPEAT) {
-            model.addAttribute("msg", "无效操作，该账号已经激活！");
-            model.addAttribute("target", "/index");
+            return "Invalid operation，该账号已经激活！";
         } else {
-            model.addAttribute("msg", "激活失败，您提供的激活码不正确！");
-            model.addAttribute("target", "/index");
+            return "Activation Fail，您提供的激活码不正确！";
         }
-        return "/site/operate-result";
     }
 
     // 生成验证码
@@ -101,8 +89,8 @@ public class LoginController implements CommunityConstant {
 //    }
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public String login(String username, String password, boolean rememberme,
-                        Model model, HttpServletResponse response) {
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password,
+                        @RequestParam("rememberme") boolean rememberme, HttpServletResponse response) {
 //        String kaptcha = (String) session.getAttribute("kaptcha");
         // 检查验证码
 //        if(StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
@@ -113,17 +101,19 @@ public class LoginController implements CommunityConstant {
         // 检查账号，密码
         int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
         Map<String, Object> map = userService.login(username,password,expiredSeconds);
+        System.out.println(map);
         if(map.containsKey("ticket")) {
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
-            return "redirect:/index";
+            logger.info("Log in success");
+            return "Log in success";
         } else {
-            model.addAttribute("usernameMsg",map.get("usernameMsg"));
-            model.addAttribute("passwordMsg",map.get("passwordMsg"));
-            return "/site/login";
+            logger.info("Log in failed");
+            return "Log in failed";
         }
+
     }
 
     @RequestMapping(path = "/logout",method = RequestMethod.GET)

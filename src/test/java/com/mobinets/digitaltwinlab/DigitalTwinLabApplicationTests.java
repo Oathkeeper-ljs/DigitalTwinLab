@@ -4,6 +4,7 @@ import com.mobinets.digitaltwinlab.dao.StaffMapper;
 import com.mobinets.digitaltwinlab.dao.UserMapper;
 import com.mobinets.digitaltwinlab.entity.Staff;
 import com.mobinets.digitaltwinlab.entity.User;
+import com.mobinets.digitaltwinlab.util.CommunityUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,15 @@ class DigitalTwinLabApplicationTests {
         System.out.println(rows);
         System.out.println(user.getId());
 
+    }
+
+    @Test
+    public void testsalt(){
+        String name = "system";
+        String salt = "abc";
+        String res = new String();
+        res = CommunityUtil.md5(name+salt);
+        System.out.println(res);
     }
 
 }
