@@ -1,26 +1,17 @@
 package com.mobinets.digitaltwinlab.controller;
 
-import com.google.code.kaptcha.Producer;
 import com.mobinets.digitaltwinlab.entity.User;
 import com.mobinets.digitaltwinlab.service.UserService;
 import com.mobinets.digitaltwinlab.util.CommunityConstant;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
+
 import java.util.Map;
 
 @RestController
@@ -88,7 +79,7 @@ public class LoginController implements CommunityConstant {
 //
 //    }
 
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String login(@RequestParam("username") String username, @RequestParam("password") String password,
                         @RequestParam("rememberme") boolean rememberme, HttpServletResponse response) {
 //        String kaptcha = (String) session.getAttribute("kaptcha");
@@ -107,8 +98,8 @@ public class LoginController implements CommunityConstant {
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
-            logger.info("Log in success");
-            return "Log in success";
+            logger.info("Log in success 你好");
+            return "Log in success 你好";
         } else {
             logger.info("Log in failed");
             return "Log in failed";
