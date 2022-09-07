@@ -29,7 +29,7 @@ public class LoginController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    @RequestMapping(path="/register", method = RequestMethod.POST)
+    @RequestMapping(path="/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String register(@RequestParam("username") String username, @RequestParam("password") String password,
                            @RequestParam("campusnum") Long campusNum, @RequestParam("email") String email) {
         User user = new User();
@@ -46,7 +46,7 @@ public class LoginController implements CommunityConstant {
         }
     }
 
-    @RequestMapping(path="/activation/{userId}/{code}", method = RequestMethod.GET)
+    @RequestMapping(path="/activation/{userId}/{code}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String activation(@PathVariable("userId") int userId, @PathVariable("code") String code) {
         int result = userService.activation(userId,code);
         if(result==ACTIVATION_SUCCESS) {
@@ -92,7 +92,6 @@ public class LoginController implements CommunityConstant {
         // 检查账号，密码
         int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
         Map<String, Object> map = userService.login(username,password,expiredSeconds);
-        System.out.println(map);
         if(map.containsKey("ticket")) {
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             cookie.setPath(contextPath);
@@ -112,5 +111,4 @@ public class LoginController implements CommunityConstant {
         userService.logout(ticket);
         return "redirect:/login";
     }
-
 }
