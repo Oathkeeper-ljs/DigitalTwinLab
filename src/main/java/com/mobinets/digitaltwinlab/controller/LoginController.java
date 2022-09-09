@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.Map;
 
 @RestController
@@ -29,6 +28,14 @@ public class LoginController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    /**
+     * 注册页面，POST4个参数
+     * @param username username
+     * @param password password
+     * @param campusNum campusNum
+     * @param email email
+     * @return return
+     */
     @RequestMapping(path="/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String register(@RequestParam("username") String username, @RequestParam("password") String password,
                            @RequestParam("campusnum") Long campusNum, @RequestParam("email") String email) {
@@ -46,6 +53,12 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+    /**
+     * 激活账号
+     * @param userId UserId
+     * @param code 激活码
+     * @return return
+     */
     @RequestMapping(path="/activation/{userId}/{code}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String activation(@PathVariable("userId") int userId, @PathVariable("code") String code) {
         int result = userService.activation(userId,code);
@@ -79,6 +92,15 @@ public class LoginController implements CommunityConstant {
 //
 //    }
 
+    /**
+     * 登录
+     * ·登录log
+     * @param username username
+     * @param password password
+     * @param rememberme rememberme过期时间
+     * @param response response
+     * @return return
+     */
     @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String login(@RequestParam("username") String username, @RequestParam("password") String password,
                         @RequestParam("rememberme") boolean rememberme, HttpServletResponse response) {
@@ -97,7 +119,7 @@ public class LoginController implements CommunityConstant {
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
-            logger.info("Log in success 你好");
+            logger.info("Log in success 你好"); // check
             return "Log in success 你好";
         } else {
             logger.info("Log in failed");

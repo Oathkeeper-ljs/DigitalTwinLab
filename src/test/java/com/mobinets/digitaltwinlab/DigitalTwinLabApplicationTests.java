@@ -15,7 +15,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Date;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+
+@SpringBootTest(classes=DigitalTwinLabApplication.class,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = DigitalTwinLabApplication.class)
 class DigitalTwinLabApplicationTests {
 
