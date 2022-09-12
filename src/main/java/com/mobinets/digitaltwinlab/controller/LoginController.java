@@ -37,8 +37,8 @@ public class LoginController implements CommunityConstant {
      * @return return
      */
     @RequestMapping(path="/register", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String register(@RequestParam("username") String username, @RequestParam("password") String password,
-                           @RequestParam("campusnum") Long campusNum, @RequestParam("email") String email) {
+    public Map<String, Object> register(@RequestParam("username") String username, @RequestParam("password") String password,
+                           @RequestParam("campusNum") Long campusNum, @RequestParam("email") String email) {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -46,11 +46,12 @@ public class LoginController implements CommunityConstant {
         user.setEmail(email);
         Map<String, Object> map = userService.register(user);
         if (map == null || map.isEmpty()) {
-            return "Register success，我们已经向您的邮箱发送了一封激活邮件，请尽快激活！";
+            map.put("RegisterStatusCode", "1");
         } else{
-            System.out.println(map);
-            return "Register failed";
+            logger.info(map.toString());
+            map.put("RegisterStatusCode", "0");
         }
+        return map;
     }
 
     /**
@@ -97,13 +98,13 @@ public class LoginController implements CommunityConstant {
      * ·登录log
      * @param username username
      * @param password password
-     * @param rememberme rememberme过期时间
+     * @param rememberMe rememberme 过期时间
      * @param response response
      * @return return
      */
     @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password,
-                        @RequestParam("rememberme") boolean rememberme, HttpServletResponse response) {
+    public Map<String, Object> login(@RequestParam("username") String username, @RequestParam("password") String password,
+                        @RequestParam("rememberMe") boolean rememberMe, HttpServletResponse response) {
 //        String kaptcha = (String) session.getAttribute("kaptcha");
         // 检查验证码
 //        if(StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
@@ -112,20 +113,21 @@ public class LoginController implements CommunityConstant {
 //        }
 
         // 检查账号，密码
-        int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
         Map<String, Object> map = userService.login(username,password,expiredSeconds);
         if(map.containsKey("ticket")) {
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
-            logger.info("Log in success 你好"); // check
-            return "Log in success 你好";
+            logger.info(map.get("userId") + " Log in success"); // check
+            map.remove("ticket");
+            map.put("loginStatusCode", "1");
         } else {
-            logger.info("Log in failed");
-            return "Log in failed";
+            logger.info(map.toString());
+            map.put("loginStatusCode", "0");
         }
-
+        return map;
     }
 
     @RequestMapping(path = "/logout",method = RequestMethod.GET)

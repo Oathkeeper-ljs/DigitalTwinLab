@@ -36,6 +36,7 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.min.js"></script>
 <!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>-->
 
+
 <script>
     var socket;
 
@@ -112,6 +113,7 @@
             alert("消息已发送")
         }
     }
+
     function sendInstruction() {
         if (typeof (WebSocket) == "undefined") {
             alert("您的浏览器不支持WebSocket");

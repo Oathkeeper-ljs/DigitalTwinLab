@@ -1,5 +1,6 @@
 package com.mobinets.digitaltwinlab.entity;
 
+import javax.validation.constraints.Email;
 import java.util.Date;
 
 public class User {
@@ -60,7 +61,7 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@Email String email) {
         this.email = email;
     }
 
