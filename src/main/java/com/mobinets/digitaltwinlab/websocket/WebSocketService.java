@@ -7,7 +7,7 @@ import java.io.IOException;
 public interface WebSocketService {
     /**
      * 连接建立时调用的方法
-     * @param session
+     * @param session session
      * @param clientType 客户端类型(webClient/gatewayClient)
      * @param userId 创建的用户Id
      */
@@ -21,22 +21,22 @@ public interface WebSocketService {
     public void onClose();
     /**
      * 有消息到达时调用的方法
-     * @param message
-     * @param session
+     * @param message message
+     * @param session session
      */
     @OnMessage
     public void onMessage(String message, Session session);
     /**
      * 发生错误时调用的方法
-     * @param session
-     * @param error
+     * @param session session
+     * @param error error
      */
     @OnError
     public void onError(Session session, Throwable error);
     /**
      * 发送消息
-     * @param message
-     * @throws IOException
+     * @param message message
+     * @throws IOException IOException
      */
     public void sendMessage(String message) throws IOException;
     /**
@@ -54,7 +54,7 @@ public interface WebSocketService {
 
     /**
      * 向网关发送信息
-     * @param message
+     * @param message message
      */
     public void sendToGateway(String message);
 

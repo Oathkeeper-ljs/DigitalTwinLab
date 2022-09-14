@@ -1,5 +1,7 @@
 package com.mobinets.digitaltwinlab.controller;
 
+import com.mobinets.digitaltwinlab.dao.DeviceMapper;
+import com.mobinets.digitaltwinlab.entity.Device;
 import com.mobinets.digitaltwinlab.service.UserService;
 import com.mobinets.digitaltwinlab.util.HostHolder;
 import org.slf4j.Logger;
@@ -7,14 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -37,6 +39,9 @@ public class UserController {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    private DeviceMapper deviceMapper;
+
 
     @RequestMapping(path = "/header/{filename}", method = RequestMethod.GET)
     public void getHeader(@PathVariable("filename") String filename, HttpServletResponse response) {
@@ -57,6 +62,20 @@ public class UserController {
         } catch (IOException e) {
             logger.error("读取图像失败！" + e.getMessage());
         }
+    }
+
+    @GetMapping("/deviceStatus")
+    @ResponseBody
+    public List<Device> getDeviceGroup() {
+
+        return deviceMapper.selectAll();
+    }
+
+    @GetMapping("/change1")
+    public String changeID() {
+        deviceMapper.updateStatus(1,1);
+        deviceMapper.updateChangeTime(1,new Date());
+        return "redirect:/user/deviceStatus";
     }
 
 

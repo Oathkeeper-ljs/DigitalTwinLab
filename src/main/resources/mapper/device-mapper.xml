@@ -5,23 +5,28 @@
 <mapper namespace="com.mobinets.digitaltwinlab.dao.DeviceMapper">
 
     <sql id="insertFields">
-        id, type, status, change_time, user_id
+        deviceID, deviceType, deviceStatus, change_time, user_id
     </sql>
 
     <sql id="selectFields">
-        id, type, status, change_time, user_id
+        deviceID, deviceType, deviceStatus, change_time, user_id
     </sql>
 
     <select id="selectById" resultType="Device">
         select <include refid="selectFields"></include>
         from device
-        where id = #{id}
+        where deviceID = #{id}
     </select>
 
     <select id="selectByType" resultType="Device">
         select <include refid="selectFields"></include>
         from device
-        where type = #{type}
+        where deviceType = #{type}
+    </select>
+
+    <select id="selectAll" resultType="Device">
+        select *
+        from device
     </select>
 
     <insert id="insertDevice" parameterType="Device" keyProperty="id">
@@ -30,14 +35,14 @@
     </insert>
 
     <update id="updateStatus">
-        update device set status = #{status} where id = #{id}
+        update device set deviceStatus = #{status} where deviceID = #{id}
     </update>
 
     <update id="updateChangeTime">
-        update device set change_time = #{changeTime} where id = #{id}
+        update device set change_time = #{changeTime} where deviceID = #{id}
     </update>
 
     <update id="updateUserId">
-        update device set user_id = #{userId} where id = #{id}
+        update device set user_id = #{userId} where deviceID = #{id}
     </update>
 </mapper>

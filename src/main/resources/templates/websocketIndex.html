@@ -21,6 +21,10 @@
     </div>
     <br/>
     <div id="toGateway">
+        [deviceType]:
+        <input id = "deviceType" name="deviceType" type="text" value="1"/>
+        [deviceID]:
+        <input id = "deviceID" name="deviceID" type="text" value="666888"/>
         [instruction]:
         <input id = "instruction" name="instruction" type="text" value="open the door"/>
         <button onclick="sendInstruction()">发送指令</button>
@@ -122,7 +126,11 @@
                 alert("请开启socket");
                 return;
             }
-            socket.send('{"contentText":"' + $("#instruction").val() + '","toClientType":"gatewayClient"}');
+            socket.send('{"instruction":"' + $("#instruction").val() +
+                '","instructionID":"10.666888.1661858077000' +
+                '","deviceType":"' + $("#deviceType").val() +
+                '","deviceID":"' + $("#deviceID").val() +
+                '","toClientType":"gatewayClient"}');
     }
     }
     function appendMessage(message) {

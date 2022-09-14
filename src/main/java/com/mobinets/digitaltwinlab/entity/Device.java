@@ -1,37 +1,39 @@
 package com.mobinets.digitaltwinlab.entity;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.Date;
 
 public class Device {
 
-    private int id;
-    private int type;
-    private int status;
+    private int deviceID;
+    private int deviceType;
+    private int deviceStatus;
     private Date changeTime;
     private int userId;
 
-    public int getId() {
-        return id;
+    public int getDeviceID() {
+        return deviceID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setDeviceID(int deviceID) {
+        this.deviceID = deviceID;
     }
 
-    public int getType() {
-        return type;
+    public int getDeviceType() {
+        return deviceType;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
     }
 
-    public int getStatus() {
-        return status;
+    public int getDeviceStatus() {
+        return deviceStatus;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setDeviceStatus(int deviceStatus) {
+        this.deviceStatus = deviceStatus;
     }
 
     public Date getChangeTime() {
@@ -53,11 +55,26 @@ public class Device {
     @Override
     public String toString() {
         return "Device{" +
-                "id=" + id +
-                ", type=" + type +
-                ", status=" + status +
+                "deviceID=" + deviceID +
+                ", deviceType=" + deviceType +
+                ", deviceStatus=" + deviceStatus +
                 ", changeTime=" + changeTime +
                 ", userId=" + userId +
                 '}';
+    }
+
+    public String JSONString() {
+        return '{' +
+                "deviceID:" + deviceID +
+                        ", deviceType:" + deviceType +
+                        ", deviceStatus:" + deviceStatus +
+                        ", changeTime:" + changeTime +
+                        ", userId:" + userId +
+                        '}';
+    }
+
+    public String toJSONString() {
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(this);
+        return jsonObject.toJSONString();
     }
 }

@@ -5,8 +5,6 @@ import com.mobinets.digitaltwinlab.dao.RoomMapper;
 import com.mobinets.digitaltwinlab.dao.StaffMapper;
 import com.mobinets.digitaltwinlab.dao.UserMapper;
 import com.mobinets.digitaltwinlab.entity.Device;
-import com.mobinets.digitaltwinlab.entity.Room;
-import com.mobinets.digitaltwinlab.entity.Staff;
 import com.mobinets.digitaltwinlab.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,10 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = DigitalTwinLabApplication.class)
 @MapperScan({"com.mobinets.digitaltwinlab.dao"})
 public class MapperTest {
@@ -41,8 +38,9 @@ public class MapperTest {
 
     @Test
     public void testSelectUser() {
-        Device device = deviceMapper.selectById(2);
+        Device device = deviceMapper.selectById(1);
         System.out.println(device);
+        System.out.println(deviceMapper.selectAll());
 
         List<Device> res = new ArrayList<>();
         res = deviceMapper.selectByType(1);
