@@ -60,7 +60,18 @@ html页面基本函数
 >
 > sendInstruction
 
-**前端请求与数据格式：**
+- **心跳检测**
+
+  ```json
+  // 由客户端每两分钟发一次，服务器连续3次心跳检测未收到则关闭连接
+  {
+      "heartBeat":"heartBeat",
+      "clientType":"gatewayClient",
+      "clientID":"ID"
+  }
+  ```
+
+- **前端请求与数据格式：**
 
 > Webscoket连接建立地址：**"/ws/{clientType}/{userId}"**
 >
@@ -119,9 +130,7 @@ html页面基本函数
 
 
 
-**网关通信的数据格式**
-
-
+- **网关通信的数据格式**
 
 >Webscoket连接建立地址：**"/ws/{clientType}/{userId}"**
 >

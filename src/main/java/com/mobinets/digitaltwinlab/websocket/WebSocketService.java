@@ -19,6 +19,13 @@ public interface WebSocketService {
      */
     @OnClose
     public void onClose();
+
+    /**
+     * 服务器主动关闭连接
+     *
+     */
+    public void closeSession();
+    public void heartBeat();
     /**
      * 有消息到达时调用的方法
      * @param message message
@@ -52,12 +59,14 @@ public interface WebSocketService {
      */
     public void sendToId(String toUserId, String message);
 
+    public void HeartBeatCountAdder();
     /**
      * 向网关发送信息
      * @param message message
      */
     public void sendToGateway(String message);
-
+    public void setUserId(String userId);
+    public int getHeartBeatCount();
     public String getClientType();
     public String getUserId();
 

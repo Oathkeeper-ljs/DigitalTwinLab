@@ -25,7 +25,7 @@ public class InitController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Runner1>>>" + Arrays.toString(args));
+        System.out.println("Server started..." + Arrays.toString(args));
 //        deviceService.getDeviceStatus(2);
     }
 }

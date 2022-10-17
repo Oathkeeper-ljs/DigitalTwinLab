@@ -20,6 +20,9 @@ public class ServiceLogAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
 
+    /**
+     * service切面
+     */
     @Pointcut("execution(* com.mobinets.digitaltwinlab.service.*.*(..))")
     public void pointcut() {
 

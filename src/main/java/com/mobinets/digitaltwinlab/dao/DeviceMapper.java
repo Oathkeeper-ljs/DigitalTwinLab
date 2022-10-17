@@ -25,5 +25,7 @@ public interface DeviceMapper {
 
     void updateUserId(int id, int userId);
 
+    List<Device> selectByStatus(int status);
+
 
 }

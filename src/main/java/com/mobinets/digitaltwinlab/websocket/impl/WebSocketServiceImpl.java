@@ -1,7 +1,6 @@
 package com.mobinets.digitaltwinlab.websocket.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mobinets.digitaltwinlab.dao.DeviceMapper;
 import com.mobinets.digitaltwinlab.entity.Device;
@@ -17,7 +16,6 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +53,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     //    private final DeviceService deviceService = new DeviceServiceImpl();
     private String userId = "";
     private String clientType = "";
+    private int heartBeatCount = 0;
 
     @OnOpen
     public void onOpen(Session session,
@@ -67,7 +66,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 网页客户端
         if (this.getClientType().equals("webClient")) {
             webClientCount.getAndIncrement(); // 在线数加一
-            log.info("New webclient connected, UserID: " + this.userId + "onLine number: " + webClientCount.get());
+            log.info("New webclient connected, UserID: " + this.userId + ", onLine number: " + webClientCount.get());
             try {
                 // 网页客户端初始化时发送所有设备信息
                 List<Device> devices = new ArrayList<>(deviceMapper.selectAll());
@@ -110,29 +109,61 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    @Override
+    public void closeSession() {
+        Session session = this.session;
+        if (!session.isOpen()) {
+            log.error("session is not open!");
+        }
+        try {
+            session.close();
+        } catch (IOException e) {
+            log.error("session close error");
+        }
+    }
+
+    @Override
+    public void heartBeat() {
+        for (WebSocketService client : webSocketClientSet) {
+            if (client.getHeartBeatCount() >= 3) {
+                log.info("Client disconnected");
+                client.closeSession();
+            }else {
+                client.HeartBeatCountAdder();
+            }
+        }
+
+    }
+
+
     @OnMessage
     public void onMessage(String message, Session session) {
+        if (message.contains("heartBeat")) {
+            this.heartBeatCount = 0;
+            return;
+        }
+
         log.info("Message from client: " + this.userId + ", message: " + message);
         // 若是来自网关的消息，则转发给所有在线用户
         if (this.getClientType().equals("gatewayClient")) {
-            if (message.contains("instructionID")) { // 用户指令操作结果（包含instructionID）
-                String fromUserID = JSON.parseObject(message).getString("fromUserID"); // 发送此条指令的用户ID
-                sendToId(fromUserID, message);
-            } else { // 设备信息更新
-                JSONObject jsonObject = JSON.parseObject(parseJSON(message));
-                jsonObject.put("isInit", false);
-                sendInfoAll(jsonObject.toJSONString()); // 发送给所有用户
-                logSQL(message); // 数据库记录
-            }
+//            if (message.contains("status")) { // 用户指令操作结果（包含instructionID）
+////                String UserID = JSON.parseObject(message).getString("fromUserID"); // 发送此条指令的用户ID
+//                sendInfoAll( message);
+//                logSQL(message); // 数据库记录
+//            } else { // 设备信息更新
+//                JSONObject jsonObject = JSON.parseObject(parseJSON(message));
+//                jsonObject.put("isInit", false);
+//                sendInfoAll(jsonObject.toJSONString()); // 发送给所有用户
+//                logSQL(message); // 数据库记录
+//            }
+            sendInfoAll(message);
+
             // 来自用户的消息
         } else {
-            String toClientType = JSON.parseObject(message).getString("toClientType");
-            if (toClientType.equals("gatewayClient")) { // 发送给网关的指令
-                sendToGateway(message);
-            } else {
-                String toUserID = JSON.parseObject(message).getString("toUserId"); // 私发给用户的消息
-                sendToId(toUserID, message);
-            }
+//            String toUserID = JSON.parseObject(message).getString("toUserId"); // 私发给用户的消息
+//            sendToId(toUserID, message);
+
+            sendToGateway(message);
         }
     }
 
@@ -146,7 +177,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         for (WebSocketService user : webSocketClientSet) {
             try {
                 if (user.getClientType().equals("webClient")) {
-                    user.sendMessage(parseJSON(message));
+                    user.sendMessage((message));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -222,17 +253,19 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @param message 网关发送的消息文本
      */
     private void logSQL(String message) {
-        JSONObject jsonObject = JSONObject.parseObject(message);
-        JSONArray jsonArray = (JSONArray) jsonObject.get("device");
-        for (Object object : jsonArray) {
-            JSONObject jsonObject1 = (JSONObject) object;
-            int deviceID = Integer.parseInt((String) jsonObject1.get("deviceID"));
-            int deviceStatus = Integer.parseInt((String) jsonObject1.get("deviceStatus"));
-            Date changeTime = new Date((Long) jsonObject1.get("changeTime"));
-            deviceMapper.updateStatus(deviceID, deviceStatus);
-            deviceMapper.updateChangeTime(deviceID, changeTime);
+//        JSONObject jsonObject = JSONObject.parseObject(message);
+////        JSONArray jsonArray = (JSONArray) jsonObject.get("device");
+////        for (Object object : jsonArray) {
+////            JSONObject jsonObject1 = (JSONObject) object;
+//        JSONObject jsonObject1 = jsonObject;
+//        int deviceID = Integer.parseInt((String)jsonObject1.get("deviceID"));
+//        int deviceStatus = Integer.parseInt((String) jsonObject1.get("status"));
+//        Date changeTime = new Date((Long) jsonObject1.get("changeTime"));
+//        deviceMapper.updateStatus(deviceID, deviceStatus);
+//        deviceMapper.updateChangeTime(deviceID, changeTime);
+//        log.info("deviceID: " + deviceID + ", update Status: " + deviceStatus);
         }
-    }
+//    }
 
     public String getClientType() {
         return clientType;
@@ -246,7 +279,18 @@ public class WebSocketServiceImpl implements WebSocketService {
         return userId;
     }
 
-    private void setUserId(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getHeartBeatCount() {
+        return heartBeatCount;
+    }
+
+    public void setHeartBeatCount(int heartBeatCount) {
+        this.heartBeatCount = heartBeatCount;
+    }
+    public void HeartBeatCountAdder(){
+        this.heartBeatCount++;
     }
 }

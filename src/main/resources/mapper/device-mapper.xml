@@ -45,4 +45,10 @@
     <update id="updateUserId">
         update device set user_id = #{userId} where deviceID = #{id}
     </update>
+
+    <select id="selectByStatus" resultType="Device">
+        select <include refid="selectFields"></include>
+        from device
+        where deviceStatus = #{status}
+    </select>
 </mapper>
